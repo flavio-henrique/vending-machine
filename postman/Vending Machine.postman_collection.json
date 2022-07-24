@@ -108,13 +108,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/products",
+							"raw": "localhost:8080/api/sellers/products",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"api",
+								"sellers",
 								"products"
 							]
 						}
@@ -138,7 +139,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": 1,\n    \"title\": \"aa\",\n    \"description\": \"aaa\",\n    \"amountAvailable\": 1,\n    \"cost\": 50\n}",
+							"raw": "{\n    \"id\": 1,\n    \"title\": \"ssss\",\n    \"description\": \"aaa\",\n    \"amountAvailable\": 1,\n    \"cost\": 50\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -146,13 +147,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/api/products/1",
+							"raw": "localhost:8080/api/sellers/products/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"api",
+								"sellers",
 								"products",
 								"1"
 							]
@@ -199,13 +201,14 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/api/products/1",
+							"raw": "localhost:8080/api/sellers/products/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"api",
+								"sellers",
 								"products",
 								"1"
 							]
@@ -310,7 +313,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"amount\": 5\n}",
+							"raw": "{\n    \"amount\": 100\n}",
 							"options": {
 								"raw": {
 									"language": "json"
