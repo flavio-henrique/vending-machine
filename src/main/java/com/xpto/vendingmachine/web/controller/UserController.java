@@ -19,12 +19,12 @@ public class UserController {
 
     @PostMapping("/api/users/buyers")
     public UserDTO registerBuyer(@RequestBody UserDTO userDTO) {
-        return userService.saveUser(userDTO, new Role(Role.BUYER));
+        return userService.saveUser(userDTO, Role.builder().authority(Role.BUYER).build());
     }
 
     @PostMapping("/api/users/sellers")
     public UserDTO registerSeller(@RequestBody UserDTO userDTO) {
-        return userService.saveUser(userDTO, new Role(Role.SELLER));
+        return userService.saveUser(userDTO, Role.builder().authority(Role.SELLER).build());
     }
     @PostMapping("api/logout/all")
     @ResponseStatus(HttpStatus.NO_CONTENT)
