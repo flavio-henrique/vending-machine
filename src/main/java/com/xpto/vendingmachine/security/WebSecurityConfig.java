@@ -2,6 +2,8 @@ package com.xpto.vendingmachine.security;
 
 
 import com.xpto.vendingmachine.persistence.model.Role;
+import com.xpto.vendingmachine.persistence.repository.SessionRepository;
+import com.xpto.vendingmachine.persistence.repository.TokenRevokeRepository;
 import com.xpto.vendingmachine.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +19,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletResponse;
+
 import static com.xpto.vendingmachine.security.SecurityConstants.ALL_PRODUCTS;
+import static com.xpto.vendingmachine.security.SecurityConstants.LOGOUT_ALL;
 import static com.xpto.vendingmachine.security.SecurityConstants.SIGN_UP_URL_BUYERS;
 import static com.xpto.vendingmachine.security.SecurityConstants.SIGN_UP_URL_SELLERS;
 
@@ -30,12 +35,18 @@ import static com.xpto.vendingmachine.security.SecurityConstants.SIGN_UP_URL_SEL
 )
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
     private UserService userService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private RESTAuthenticationEntryPoint authenticationEntryPoint;
     @Autowired
     private RESTAuthenticationFailureHandler authenticationFailureHandler;
+    @Autowired
+    private SessionRepository sessionRepository;
+    @Autowired
+    private TokenRevokeRepository tokenRevokeRepository;
+
 
     public WebSecurityConfig(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
@@ -45,22 +56,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.cors().and().anonymous().and().authorizeRequests()
+        http.cors()
+                .and()
+                .anonymous()
+                .and()
+                .authorizeRequests()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL_SELLERS).permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL_BUYERS).permitAll()
+                .antMatchers(HttpMethod.POST, LOGOUT_ALL).permitAll()
                 .antMatchers(HttpMethod.GET, ALL_PRODUCTS).permitAll()
                 .antMatchers("/api/sellers/products/**").hasRole(Role.SELLER)
                 .antMatchers("/api/buyers/**").hasRole(Role.BUYER)
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), sessionRepository))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), tokenRevokeRepository))
+
 
 
                 // this disables session creation on Spring Security
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .sessionAuthenticationFailureHandler(authenticationFailureHandler)
-        .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .formLogin()
+                .failureHandler(authenticationFailureHandler);
     }
 
     @Override

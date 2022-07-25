@@ -1,6 +1,11 @@
-
+logging:
+  level:
+    org:
+      springframework: DEBUG
 
 spring:
+  redis:
+    host: redis
   jpa:
     database: POSTGRESQL
     show-sql: true

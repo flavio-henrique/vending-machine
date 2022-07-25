@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.xpto.vendingmachine.persistence.model.Role;
+import com.xpto.vendingmachine.persistence.repository.TokenRevokeRepository;
+import com.xpto.vendingmachine.web.controller.BadRequestException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +25,13 @@ import static com.xpto.vendingmachine.security.SecurityConstants.TOKEN_PREFIX;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    public JWTAuthorizationFilter(AuthenticationManager authManager) {
+    private TokenRevokeRepository tokenRevokeRepository;
+
+    public JWTAuthorizationFilter(AuthenticationManager authManager, TokenRevokeRepository tokenRevokeRepository) {
         super(authManager);
+        this.tokenRevokeRepository = tokenRevokeRepository;
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest req,
@@ -54,6 +60,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .build()
                     .verify(token.replace(TOKEN_PREFIX, ""));
             String user = jwt.getSubject();
+            if(tokenRevokeRepository.findById(jwt.getId()).isPresent()) {
+                throw new BadRequestException("You are logged out.");
+            }
             List<Role> roles = jwt.getClaim("role").asList(Role.class);
 
             if (user != null) {
