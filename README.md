@@ -12,6 +12,6 @@ Run `./mvnw clean package`
 
 Run `cp target/vending-machine-0.0.1-SNAPSHOT.jar docker`
 
-Run `(cd ./docker/ && docker-compose up)`
+Run `(cd ./docker/ && sudo docker-compose up)` for linux `(cd ./docker/ && sudo docker compose up)`
 
 The App will be running on `localhost:8080/api`
