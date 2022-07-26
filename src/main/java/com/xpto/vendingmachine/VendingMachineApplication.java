@@ -29,7 +29,11 @@ public class VendingMachineApplication {
 
 	@Bean
 	JedisConnectionFactory jedisConnectionFactory() {
-		return new JedisConnectionFactory();
+		JedisConnectionFactory factory = new JedisConnectionFactory();
+		factory.setHostName("redis");
+		factory.setPort(6379);
+		factory.setUsePool(true);
+		return factory;
 	}
 
 	@Bean
